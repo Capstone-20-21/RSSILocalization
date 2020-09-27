@@ -1,0 +1,103 @@
+<!-- 
+	Configulation of Raylaunching Solver
+	(c) 2019 Takahiro Hashimoto
+ -->
+
+<!-- geometory -->
+	<is_free_space>false</is_free_space>
+	<geometry_filename>Geometry.stl</geometry_filename>
+	<!-- 0: complex permittivity, 1: static permittivity and conductivity -->
+	<material_setting_mode>1</material_setting_mode>
+	<complex_permittivity>
+		<real></real><imag></imag>
+	</complex_permittivity>
+	<static_permittivity>5.0</static_permittivity>
+	<conductivity>0.01</conductivity>
+	<is_use_impedance_boundary>false</is_use_impedance_boundary>
+	<is_diffract_isolated_edges>false</is_diffract_isolated_edges>
+
+<!-- source -->
+	<frequency>5.0e9</frequency>
+	<source_position> <x>0.01</x> <y>0.99</y> <z>1.5</z> </source_position>
+	<transmitting_power_dBm>30</transmitting_power_dBm>
+	<tx_antenna_pattern_file>HalfLengthDipole.dat</tx_antenna_pattern_file>
+	<tx_axis> 
+		<zx>0.0</zx> <zy>0.0</zy> <zz>1.0</zz>
+		<xx>1.0</xx> <xy>0.0</xy> <xz>0.0</xz>
+	</tx_axis>
+
+<!-- launching -->
+	<!-- 0: single ray (debug),     1: uniform rays, 
+	     2: uniform theta-phi rays, 3: non-uniform theta-phi rays-->
+	<ray_launch_mode>1</ray_launch_mode>
+	<!-- # of rays: 10*nt^2+2. Ray interval: 360/5/nt deg (approx.) -->
+	<num_tesselate>101</num_tesselate>
+	<!-- # of rays: (ntheta-2)*nphi+2. Ray interval: 180/(ntheta-1), 360/nphi deg-->
+	<num_theta>200</num_theta>
+	<num_phi>50</num_phi>
+	<launch_zaxis> <x>1.0</x> <y>0.0</y> <z>0.0</z> </launch_zaxis>
+	<launch_xaxis> <x>0.0</x> <y>1.0</y> <z>0.0</z> </launch_xaxis>
+
+	<!-- filtering by axis and angle -->
+	<is_filter_rays_by_theta_angle>true</is_filter_rays_by_theta_angle>
+	<is_filter_rays_by_phi_angle>false</is_filter_rays_by_phi_angle>
+	<launch_angle_theta_deg>90</launch_angle_theta_deg>
+	<launch_angle_phi_start_deg></launch_angle_phi_start_deg>
+	<launch_angle_phi_end_deg></launch_angle_phi_end_deg>
+	<launch_filter_zaxis> <x>1.0</x> <y>0.0</y> <z>0.0</z> </launch_filter_zaxis>
+	<launch_filter_xaxis> <x>0.0</x> <y>1.0</y> <z>0.0</z> </launch_filter_xaxis>
+
+	<!-- debug -->
+	<is_filter_rays_by_launch_id>false</is_filter_rays_by_launch_id>
+	<ray_id_to_launch></ray_id_to_launch>
+
+	<!-- <single_launch>
+		<dir0> <x>-1.1</x> <y>-1.0</y> <z>-0.1</z> </dir0>
+		<dir1> <x>-0.9</x> <y>-1.0</y> <z> 0.0</z> </dir1>
+		<dir2> <x>-1.1</x> <y>-1.0</y> <z> 0.1</z> </dir2>
+	</single_launch> -->
+
+<!-- tracing -->
+	<num_reflection_max>1</num_reflection_max>
+	<num_diffraction_max>0</num_diffraction_max>
+	<num_ray_diffraction>10</num_ray_diffraction>
+	<is_restrict_diffracting_edge>false</is_restrict_diffracting_edge>
+	<diffracting_edge_index></diffracting_edge_index>
+	<tracing_power_thres_dBm>-100</tracing_power_thres_dBm>
+
+<!-- captureing -->
+	<!-- 0: position, 1: position and axis -->
+	<receiver_position_load_type>0</receiver_position_load_type>
+	<receiver_position_filename>ReceiverPositions.dat</receiver_position_filename>
+	<rx_antenna_pattern_file>HalfLengthDipole.dat</rx_antenna_pattern_file>
+	<rx_axis> 
+		<zx>0.0</zx> <zy>0.0</zy> <zz>1.0</zz>
+		<xx>1.0</xx> <xy>0.0</xy> <xz>0.0</xz>
+	</rx_axis>
+
+	<!-- filtering -->
+	<is_filter_nan_rays>false</is_filter_nan_rays>
+	<is_filter_direct_rays>false</is_filter_direct_rays>
+	<is_filter_low_power_rays>false</is_filter_low_power_rays>
+	<power_truncation_threshold>30</power_truncation_threshold>
+	<is_remove_duplicate_rays>true</is_remove_duplicate_rays>
+
+<!-- output -->
+	<!-- CSV -->
+	<is_save_receivers_csv>true</is_save_receivers_csv>
+	<is_save_electric_field_csv>false</is_save_electric_field_csv>
+	<is_save_electric_field_matlab_csv>false</is_save_electric_field_matlab_csv>
+
+	<!-- VTK (for visualization) -->
+	<is_save_facemodel_vtk>false</is_save_facemodel_vtk>
+	<is_save_edgemodel_vtk>false</is_save_edgemodel_vtk>
+	<is_save_transmitter_vtk>false</is_save_transmitter_vtk>
+	<is_save_tessellated_icosahedron_vtk>false</is_save_tessellated_icosahedron_vtk>
+	<is_save_raytube_vtk>false</is_save_raytube_vtk>
+	<is_save_receivers_vtk>true</is_save_receivers_vtk>
+	<is_save_raypath_vtk>false</is_save_raypath_vtk>
+	
+<!-- system -->
+	<!-- 0: set maximum cpus -->
+	<num_openmp_cpus>1</num_openmp_cpus>
+	<num_log_interval>25</num_log_interval>

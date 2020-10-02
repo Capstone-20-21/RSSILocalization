@@ -1,70 +1,68 @@
 import sys
 import numpy as np
+import argparse
 from PlotReceiverPositions import PlotReceiverPositions
+from ast import literal_eval
 
 firstLine = "receiver positions"
-scriptForm = "GenerateReceiverPositions.py x1, y1, z1, x2, y2, z2 (numXPoints) (numYPoints) (numZPoints)"
-outputFile = "ReceiverPositions.dat"
 
-minNumArguments = 6
-maxNumArguments = 9
+'''
+Sample Usage:
+
+python GenerateReceiverPositions.py (0,-1.5,0) (50,1.5,4) --numX 101 --numY 7 --numZ 9 --filePath 
+"SampleReceiverPositions/ReceiverPositions__0_-1.5_0__50_1.5_4__101_7_9.dat" 
+
+'''
+
 
 class Vector3:
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
+    def __init__(self, *args):
+        if len(args) == 3:
+            self.x = args[0]
+            self.y = args[1]
+            self.z = args[2]
+        else:
+            tupleVector = literal_eval(args[0])
+            self.x = tupleVector[0]
+            self.y = tupleVector[1]
+            self.z = tupleVector[2]
 
     def __str__(self):
-        return f"{self.x} {self.y} {self.z}"
+        return f"({self.x} {self.y} {self.z})"
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.z == other.z
 
 
-
-def parseArguments(args):
+def ParseArguments():
     """
     Parse the arguments needed for this function
-    :param args: arguments from sys.argv (includes file name)
     :return: (point1, point2, numPoints) - 3D vectors
     """
-    numArguments = len(args)
+    parser = argparse.ArgumentParser(prog=sys.argv[0], description="Process script arguments")
+    parser.add_argument('point1', type=Vector3, metavar="Point1", help="Bottom Left Point")
+    parser.add_argument('point2', type=Vector3, metavar="Point2", help="Top Right Point")
+    parser.add_argument('--numX', type=int, metavar="NumX", default=2, help="Number of x locations to split by")
+    parser.add_argument('--numY', type=int, metavar="NumY", default=2, help="Number of y locations to split by")
+    parser.add_argument('--numZ', type=int, metavar="NumZ", default=2, help="Number of z locations to split by")
+    parser.add_argument('--plot', nargs="?", metavar="Plot", const=True, default=False, help="Should display plot of receiver positions")
+    parser.add_argument('--print', nargs="?", metavar="Print", const=True, default=False, help="Should print receiver positions")
+    parser.add_argument('--noSave', nargs="?", metavar="NoSave", const=True, default=False, help="Should write receiver positions in receiverPositions.dat")
+    parser.add_argument('--filePath', metavar="FilePath", default="receiverPositions.dat", help="Path to file")
+    arguments = parser.parse_args()
 
-    if numArguments == 1 or numArguments-1 < minNumArguments or numArguments-1 > maxNumArguments:
-        print("ERROR - Too few arguments")
-        print(f"Correct Form: {scriptForm}")
-        sys.exit(-1)
+    point1 = arguments.point1
+    point2 = arguments.point2
 
-    args = args[1:]
-    numArguments = len(args)
+    numX = arguments.numX if arguments.numX is not None else 2
+    numY = arguments.numY if arguments.numY is not None else 2
+    numZ = arguments.numZ if arguments.numZ is not None else 2
+    numPoints = Vector3(numX, numY, numZ)
 
-    for i, argument in enumerate(args, 1):
-        print(f"  Arg {i} - {argument}")
-    print()
-
-    point1 = Vector3(float(args[0]), float(args[1]), float(args[2]))
-    point2 = Vector3(float(args[3]), float(args[4]), float(args[5]))
-    if (point1 == point2):
-        print("ERROR - Points are identical")
-        sys.exit(-1)
-
-    numPoints = Vector3(2, 2, 2)
-    if numArguments > 6:
-        numPoints.x = int(args[6])
-    if numArguments > 7:
-        numPoints.y = int(args[7])
-    if numArguments > 8:
-        numPoints.z = int(args[8])
-
-    if numPoints.x < 2 or numPoints.y < 2 or numPoints.z < 2:
-        print("ERROR - Too few points, minimum = 2")
-        sys.exit(-1)
-
-    return point1, point2, numPoints
+    return point1, point2, numPoints, {"plot": arguments.plot, "print": arguments.print, "noSave": arguments.noSave, "file": arguments.filePath}
 
 
-def GenerateReceiverPositions(point1, point2, numPoints):
+def GenerateReceiverPositions(point1, point2, numPoints, printPositions=False):
     """
     Generate the receiver positions in a rectangle
     :param point1: Bottom left corner
@@ -77,16 +75,23 @@ def GenerateReceiverPositions(point1, point2, numPoints):
     yPoints = np.linspace(point1.y, point2.y, numPoints.y) if point1.y != point2.y else [point1.y]
     zPoints = np.linspace(point1.z, point2.z, numPoints.z) if point1.z != point2.z else [point1.z]
 
+    if printPositions:
+        print("Receiver Positions (x y z):")
     receiverPositions = []
     for x in xPoints:
         for y in yPoints:
             for z in zPoints:
                 receiverPositions.append(Vector3(x,y,z))
+                if printPositions:
+                    print(f"  {receiverPositions[-1]}")
+
+    if printPositions:
+        print()
 
     return receiverPositions
 
 
-def GenerateFile(receiverPositions):
+def GenerateFile(receiverPositions, fileName="ReceiverPositions.dat"):
     """
     Generate a file containing the receiver positions
     :param receiverPositions: List of receiver positions
@@ -98,30 +103,27 @@ def GenerateFile(receiverPositions):
         zStr = int(position.z) if position.z.is_integer() else "{:.6e}".format(position.z)
         lines.append(f" {xStr} {yStr} {zStr}")
 
-    with open(outputFile, "w") as f:
+    with open(fileName, "w") as f:
         f.write("\n".join(lines)+"\n")
 
-    return outputFile
+    return fileName
 
 
-if __name__=="__main__":
-    arguments = sys.argv
-
+if __name__ == "__main__":
     print("GenerateRecieverPositions.py:")
     print()
 
-    point1, point2, numPoints = parseArguments(arguments)
+    point1, point2, numPoints, optionals = ParseArguments()
 
-    print(f"Point 1: {point1}")
-    print(f"Point 2: {point2}")
-    print(f"Step: {numPoints}")
+    print(f"Point 1 (x y z): {point1}")
+    print(f"Point 2 (x y z): {point2}")
+    print(f"Number of Points (x y z): {numPoints}")
     print()
 
-    receiverPositions = GenerateReceiverPositions(point1, point2, numPoints)
-    fileName = GenerateFile(receiverPositions)
+    receiverPositions = GenerateReceiverPositions(point1, point2, numPoints, printPositions=optionals["print"])
+    if not optionals["noSave"]:
+        fileName = GenerateFile(receiverPositions, fileName=optionals["file"])
+        print(f"File Generated - {fileName}")
 
-    print(f"File Generated - {fileName}")
-
-    PlotReceiverPositions(receiverPositions)
-
-    sys.exit(0)
+    if optionals["plot"]:
+        PlotReceiverPositions(receiverPositions)

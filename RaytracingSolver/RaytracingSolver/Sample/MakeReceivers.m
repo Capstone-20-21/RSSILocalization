@@ -2,8 +2,8 @@
 % (c) 2019 Takahiro Hashimoto
 % 
 
-p0 = [1;  -1.5; 2];
-p1 = [50; -1.5; 2];
+p0 = [1;  1; 1.5];
+p1 = [50; 1; 1.5];
 nx = 99;
 
 filename = 'ReceiverPositions.dat';

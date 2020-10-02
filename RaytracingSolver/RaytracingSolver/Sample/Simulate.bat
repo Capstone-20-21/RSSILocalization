@@ -1,7 +1,7 @@
 
 @echo off
 
-set Program="..\Simulator\RayTubeTracing.exe"
+set Program="..\Program\RayTubeTracing.exe"
 
 echo;
 echo '%0' started by %USERNAME% @ %COMPUTERNAME%: %DATE% %TIME%

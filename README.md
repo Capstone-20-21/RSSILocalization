@@ -4,12 +4,15 @@
 **Supervisor:** Professor Costas Sarris  
 
 
-### Directory Structure
+## Directory Structure
+
+### Simulator Interface
+
 #### Interface
 Contains relevant scripts and executables to run the simulator with varying parameters
 
-#### RaytracingSolver
-Simulator executable and sample information provided by professor
-
 #### ReceiverPositions
 Contains relevant scripts to generate ReceiverPositions.dat and sample outputs
+
+#### Simulator Sample
+Simulator executable and sample information provided by professor

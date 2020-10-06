@@ -3,17 +3,44 @@ import os, sys
 import argparse
 from shutil import copyfile, move
 from lxml import etree
+from ast import literal_eval
 
 '''
 Sample Usage:
+-----------------------
 
-python Simulator.py --receiverPositions "D:\Files\Local 
-Storage\Development\School\Capstone\SimulatorInterface\ReceiverPositions\SampleReceiverPositions
-\ReceiverPositions__0_-1.5_2__50_1.5_2__101_7_1.dat" --geometryFile "Simulator\Geometry.stl" --outputFile 
-"Outputs\ReceivedPowers__0_-1.5_2__50_1.5_2__101_7_1.csv" 
+python Simulator.py 
+
+Arguments:
+--receiverPositions "..\ReceiverPositions\SampleReceiverPositions\ReceiverPositions__0_-1.5_2__50_1.5_2__101_7_1.dat" 
+--geometryFile "Simulator\Geometry.stl" 
+--outputFile "Outputs\ReceivedPowers__0_-1.5_2__50_1.5_2__101_7_1.csv" 
+--sourcePosition (1,0,2)
+--numReflectionMax 2
+--numDiffractionMax 0 
 
 '''
 
+class Vector3:
+    def __init__(self, *args):
+        if len(args) == 3:
+            self.x = args[0]
+            self.y = args[1]
+            self.z = args[2]
+        else:
+            tupleVector = literal_eval(args[0])
+            self.x = tupleVector[0]
+            self.y = tupleVector[1]
+            self.z = tupleVector[2]
+
+    def __str__(self):
+        return f"({self.x} {self.y} {self.z})"
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def ConfigFormat(self):
+        return f"<x>{self.x}</x> <y>{self.y}</y> <z>{self.z}</z>"
 
 def csv_file(string):
     # Check that string is .csv file
@@ -68,25 +95,37 @@ def ParseArguments():
                         help="Path to output .csv file")
     parser.add_argument('--geometryFile', type=stl_file, metavar="GeometryFile", default="Geometry.stl",
                         help="Path to geometry .stl file")
+    parser.add_argument('--sourcePosition', type=Vector3, metavar="SourcePosition", help="Source Position (x,y,z)",
+                        default=Vector3(0.01, 0.99, 1.5))
+    parser.add_argument('--numReflectionMax', type=int, metavar="NumReflectionMax", help="Number Maximum of Reflections",
+                        default=1)
+    parser.add_argument('--numDiffractionMax', type=int, metavar="NumDiffractionMax",
+                        help="Number Maximum of Diffractions",
+                        default=0)
+
 
     arguments = parser.parse_args()
 
     receiverPositionsFile = arguments.receiverPositions
     outputFile = arguments.outputFile
     geometryFile = arguments.geometryFile
+    sourcePosition = arguments.sourcePosition
+    numReflectionMax = arguments.numReflectionMax
+    numDiffractionMax = arguments.numDiffractionMax
 
-    return receiverPositionsFile, outputFile, geometryFile
+    return receiverPositionsFile, outputFile, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax
 
 
 if __name__ == "__main__":
     print("Simulator.py:")
     print()
 
-    receiverPositionsFile, desiredOutputFile, geometryFile = ParseArguments()
+    receiverPositionsFile, desiredOutputFile, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax = ParseArguments()
 
     print(f"ReceiverPositions: {receiverPositionsFile}")
     print(f"Geometry: {geometryFile}")
     print(f"Output File: {desiredOutputFile}")
+    print(f"Source Position: {str(sourcePosition)}")
     print()
 
     # Setup needed path variables
@@ -107,6 +146,9 @@ if __name__ == "__main__":
     # Generate new config.xml changes
     receiverPositionsReplacement = f"  <receiver_position_filename>{receiverPositionsFile}</receiver_position_filename>\n"
     geometryFileReplacement = f"  <geometry_filename>{geometryFile}</geometry_filename>\n"
+    sourcePositionReplacement = f"  <source_position> {sourcePosition.ConfigFormat()} </source_position>\n"
+    numReflectionMaxReplacement = f"  <num_reflection_max>{numReflectionMax}</num_reflection_max>\n"
+    numDiffractionMaxReplacement = f"  <num_diffraction_max>{numDiffractionMax}</num_diffraction_max>\n"
 
     # Write new config.xml file
     with open(configFile, 'w') as newConfig, open(backupConfigFile, 'r') as oldConfig:
@@ -115,6 +157,12 @@ if __name__ == "__main__":
                 newConfig.write(receiverPositionsReplacement)
             elif "geometry_filename" in line:
                 newConfig.write(geometryFileReplacement)
+            elif "source_position" in line:
+                newConfig.write(sourcePositionReplacement)
+            elif "num_reflection_max" in line:
+                newConfig.write(numReflectionMaxReplacement)
+            elif "num_diffraction_max" in line:
+                newConfig.write(numDiffractionMaxReplacement)
             else:
                 newConfig.write(line)
 

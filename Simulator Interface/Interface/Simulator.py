@@ -9,15 +9,15 @@ from ast import literal_eval
 Sample Usage:
 -----------------------
 
-python Simulator.py 
+python Simulator.py
 
 Arguments:
---receiverPositions "..\ReceiverPositions\SampleReceiverPositions\ReceiverPositions__0_-1.5_2__50_1.5_2__101_7_1.dat" 
---geometryFile "Simulator\Geometry.stl" 
---outputFile "Outputs\ReceivedPowers__0_-1.5_2__50_1.5_2__101_7_1.csv" 
+--receiverPositions "..\ReceiverPositions\SampleReceiverPositions\ReceiverPositions__0_-1.5_2__50_1.5_2__101_7_1.dat"
+--geometryFile "Simulator\Geometry.stl"
+--outputFile "Outputs\ReceivedPowers__0_-1.5_2__50_1.5_2__101_7_1.csv"
 --sourcePosition (1,0,2)
 --numReflectionMax 2
---numDiffractionMax 0 
+--numDiffractionMax 0
 
 '''
 
@@ -87,6 +87,7 @@ def ParseArguments():
     Parse the arguments needed for this function
     :return: (point1, point2, numPoints) - 3D vectors
     """
+    
     parser = argparse.ArgumentParser(prog=sys.argv[0], description="Process script arguments")
     parser.add_argument('--receiverPositions', type=dat_file, metavar="ReceiverPositions",
                         default="receiverPositions.dat",
@@ -116,7 +117,7 @@ def ParseArguments():
     return receiverPositionsFile, outputFile, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax
 
 
-if __name__ == "__main__":
+def main():
     print("Simulator.py:")
     print()
 
@@ -182,4 +183,5 @@ if __name__ == "__main__":
         # revert backup ReceivedPowers.csv
         move(backupOutputFile, outputFile)
 
-
+if __name__ == "__main__":
+    main()

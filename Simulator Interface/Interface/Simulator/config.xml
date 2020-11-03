@@ -29,19 +29,33 @@
 <!-- launching -->
 	<!-- 0: single ray (debug),     1: uniform rays, 
 	     2: uniform theta-phi rays, 3: non-uniform theta-phi rays-->
-	<ray_launch_mode>1</ray_launch_mode>
+	<ray_launch_mode>2</ray_launch_mode>
+  
+  
+  <!-- <single_launch>
+    <dir0><x>1.0</x> <y>0.0</y> <z>0.0</z></dir0>
+    <dir1><x>1.0</x> <y>1.0</y> <z>0.0</z></dir1>
+    <dir2><x>0.0</x> <y>0.0</y> <z>1.0</z></dir2>
+  </single_launch> -->
+  
+  
 	<!-- # of rays: 10*nt^2+2. Ray interval: 360/5/nt deg (approx.) -->
-	<num_tesselate>101</num_tesselate>
-	<!-- # of rays: (ntheta-2)*nphi+2. Ray interval: 180/(ntheta-1), 360/nphi deg-->
-	<num_theta>200</num_theta>
-	<num_phi>50</num_phi>
-	<launch_zaxis> <x>1.0</x> <y>0.0</y> <z>0.0</z> </launch_zaxis>
-	<launch_xaxis> <x>0.0</x> <y>1.0</y> <z>0.0</z> </launch_xaxis>
+  <!-- icosahedron subdivision frequency -->
+	<!--<num_tesselate>80</num_tesselate> -->
+  
+  
+  
+	<!-- # of rays: (ntheta-2)*nphi+2. Ray interval: 180/(ntheta), 360/nphi deg-->
+  <!-- #theta-phi launching ray tubes = (2*nphi)(ntheta-1) -->
+	<num_theta>180</num_theta>
+	<num_phi>360</num_phi>
+	<launch_zaxis> <x>0.0</x> <y>0.0</y> <z>1.0</z> </launch_zaxis>
+	<launch_xaxis> <x>1.0</x> <y>0.0</y> <z>0.0</z> </launch_xaxis>
 
 	<!-- filtering by axis and angle -->
-	<is_filter_rays_by_theta_angle>true</is_filter_rays_by_theta_angle>
+	<is_filter_rays_by_theta_angle>false</is_filter_rays_by_theta_angle>
 	<is_filter_rays_by_phi_angle>false</is_filter_rays_by_phi_angle>
-	<launch_angle_theta_deg>90</launch_angle_theta_deg>
+	<!--<launch_angle_theta_deg>90</launch_angle_theta_deg>
 	<launch_angle_phi_start_deg></launch_angle_phi_start_deg>
 	<launch_angle_phi_end_deg></launch_angle_phi_end_deg>
 	<launch_filter_zaxis> <x>1.0</x> <y>0.0</y> <z>0.0</z> </launch_filter_zaxis>
@@ -99,5 +113,5 @@
 	
 <!-- system -->
 	<!-- 0: set maximum cpus -->
-	<num_openmp_cpus>8</num_openmp_cpus>
+	<num_openmp_cpus>12</num_openmp_cpus>
 	<num_log_interval>25</num_log_interval>

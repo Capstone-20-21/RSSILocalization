@@ -92,7 +92,7 @@ def ParseArguments():
     parser.add_argument('--receiverPositions', type=dat_file, metavar="ReceiverPositions",
                         default="receiverPositions.dat",
                         help="Path to receiver positions .dat file")
-    parser.add_argument('--outputFile', type=csv_file, metavar="OutputFile", default="Outputs\\ReceivedPowers.csv",
+    parser.add_argument('--outputFile', type=csv_file, metavar="OutputFile", default="",
                         help="Path to output .csv file")
     parser.add_argument('--geometryFile', type=stl_file, metavar="GeometryFile", default="Geometry.stl",
                         help="Path to geometry .stl file")
@@ -113,6 +113,9 @@ def ParseArguments():
     sourcePosition = arguments.sourcePosition
     numReflectionMax = arguments.numReflectionMax
     numDiffractionMax = arguments.numDiffractionMax
+    
+    if outputFile=="":
+        outputFile=f"Outputs\\r{numReflectionMax}_d{numDiffractionMax}_ReceivedPowers.csv"
 
     return receiverPositionsFile, outputFile, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax
 

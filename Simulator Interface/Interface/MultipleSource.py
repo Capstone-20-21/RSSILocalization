@@ -40,7 +40,7 @@ def ParseArguments_MultiSource():
     parser.add_argument('--receiverPositions', type=Simulator.dat_file, metavar="ReceiverPositions",
                         default="receiverPositions.dat",
                         help="Path to receiver positions .dat file")
-    parser.add_argument('--outputFile', type=str, metavar="OutputFile", default="Outputs\\ReceivedPowers.csv",
+    parser.add_argument('--outputFile', type=str, metavar="OutputFile", default="",
                         help="Path to output .csv file")
     parser.add_argument('--geometryFile', type=Simulator.stl_file, metavar="GeometryFile", default="Geometry.stl",
                         help="Path to geometry .stl file")
@@ -61,6 +61,9 @@ def ParseArguments_MultiSource():
     sourceFile = arguments.sourceFile
     numReflectionMax = arguments.numReflectionMax
     numDiffractionMax = arguments.numDiffractionMax
+    
+    if outputFile=="":
+        outputFile=f"Outputs\\r{numReflectionMax}_d{numDiffractionMax}_ReceivedPowers"
 
     return receiverPositionsFile, outputFile, geometryFile, sourceFile, numReflectionMax, numDiffractionMax
 
@@ -77,7 +80,7 @@ def main():
     for index, row in source_position_df.iterrows():
         sourcePosition = (row[0], row[1], row[2])
 
-        desiredOutputFile = outputFile + '__'+str(row[0])+'_'+str(row[1])+'_'+str(row[2])+'.csv'
+        desiredOutputFile = outputFile + '_s('+str(row[0])+','+str(row[1])+','+str(row[2])+').csv'
 
         sys.argv = ['Simulator.py','--receiverPositions', receiverPositionsFile, '--geometryFile', geometryFile,
         '--outputFile', desiredOutputFile, '--sourcePosition', str(sourcePosition), '--numReflectionMax', str(numReflectionMax),

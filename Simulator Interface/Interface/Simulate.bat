@@ -19,10 +19,14 @@ set ND=%5
 echo   NumDiffractions - %ND%
 
 set OF=%6
+echo   OutputFolder - %OFLD%
+if NOT "%OFLD%"=="" set OFLDARG=--outputFolder %OFLD%
+
+set OF=%7
 echo   OutputFile - %OF%
 
 if "%OF%"=="" (
-  python MultipleSource.py --receiverPositions %RP% --geometryFile %GF% --sourceFile %SP% --numReflectionMax %NR% --numDiffractionMax %ND%
+  python MultipleSource.py --receiverPositions %RP% --geometryFile %GF% --sourceFile %SP% --numReflectionMax %NR% --numDiffractionMax %ND% %OFLDARG%
 ) else (
-  python MultipleSource.py --receiverPositions %RP% --geometryFile %GF% --outputFile %OF% --sourceFile %SP% --numReflectionMax %NR% --numDiffractionMax %ND%
+  python MultipleSource.py --receiverPositions %RP% --geometryFile %GF% --outputFile %OF% --sourceFile %SP% --numReflectionMax %NR% --numDiffractionMax %ND% %OFLDARG%
 )

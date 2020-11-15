@@ -15,6 +15,7 @@ Arguments:
 --receiverPositions "..\ReceiverPositions\SampleReceiverPositions\ReceiverPositions__0_-1.5_2__50_1.5_2__101_7_1.dat"
 --geometryFile "Simulator\Geometry.stl"
 --outputFile "Outputs\ReceivedPowers__0_-1.5_2__50_1.5_2__101_7_1.csv"
+--outputFolder "Outputs"
 --sourcePosition (1,0,2)
 --numReflectionMax 2
 --numDiffractionMax 0
@@ -90,16 +91,18 @@ def ParseArguments():
     
     parser = argparse.ArgumentParser(prog=sys.argv[0], description="Process script arguments")
     parser.add_argument('--receiverPositions', type=dat_file, metavar="ReceiverPositions",
-                        default="receiverPositions.dat",
+                        default="..\ReceiverPositions\SampleReceiverPositions\ReceiverPositions_environment_processed.dat",
                         help="Path to receiver positions .dat file")
-    parser.add_argument('--outputFile', type=csv_file, metavar="OutputFile", default="",
+    parser.add_argument('--outputFile', type=str, metavar="OutputFile", default="",
                         help="Path to output .csv file")
-    parser.add_argument('--geometryFile', type=stl_file, metavar="GeometryFile", default="Geometry.stl",
+    parser.add_argument('--outputFolder', type=str, metavar="OutputFolder", default="Outputs",
+                        help="Path to output folder")
+    parser.add_argument('--geometryFile', type=stl_file, metavar="GeometryFile", default="..\..\..\BahenHallway.stl",
                         help="Path to geometry .stl file")
     parser.add_argument('--sourcePosition', type=Vector3, metavar="SourcePosition", help="Source Position (x,y,z)",
                         default=Vector3(0.01, 0.99, 1.5))
     parser.add_argument('--numReflectionMax', type=int, metavar="NumReflectionMax", help="Number Maximum of Reflections",
-                        default=1)
+                        default=0)
     parser.add_argument('--numDiffractionMax', type=int, metavar="NumDiffractionMax",
                         help="Number Maximum of Diffractions",
                         default=0)
@@ -109,22 +112,26 @@ def ParseArguments():
 
     receiverPositionsFile = arguments.receiverPositions
     outputFile = arguments.outputFile
+    outputFolder = arguments.outputFolder
     geometryFile = arguments.geometryFile
     sourcePosition = arguments.sourcePosition
     numReflectionMax = arguments.numReflectionMax
     numDiffractionMax = arguments.numDiffractionMax
     
     if outputFile=="":
-        outputFile=f"Outputs\\r{numReflectionMax}_d{numDiffractionMax}_ReceivedPowers.csv"
+        receiverPositionsFileName= receiverPositionsFile.split('\\')[-1][:-4]
+        outputFile=f"r{numReflectionMax}_d{numDiffractionMax}_{receiverPositionsFileName}_s({sourcePosition.x},{sourcePosition.y},{sourcePosition.z}).csv"
+    else:
+        csv_file(outputFile)
 
-    return receiverPositionsFile, outputFile, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax
+    return receiverPositionsFile, outputFile, outputFolder, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax
 
 
 def main():
     print("Simulator.py:")
     print()
 
-    receiverPositionsFile, desiredOutputFile, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax = ParseArguments()
+    receiverPositionsFile, desiredOutputFile, outputFolder, geometryFile, sourcePosition, numReflectionMax, numDiffractionMax = ParseArguments()
 
     print(f"ReceiverPositions: {receiverPositionsFile}")
     print(f"Geometry: {geometryFile}")
@@ -175,9 +182,12 @@ def main():
         subprocess.run([executablePath + executable], shell=True, cwd=executablePath)
 
         # Move output to desired location & revert backup
-        move(outputFile, desiredOutputFile)
-    except:
+        desiredLocation = f"{outputFolder}\\{desiredOutputFile}"
+        os.makedirs(os.path.dirname(desiredLocation), exist_ok=True)
+        move(outputFile, desiredLocation)
+    except Exception as e:
         print("ERROR RUNNING EXECUTABLE")
+        print(e)
     finally:
         # Delete generated config.xml and revert backup
         os.remove(configFile)

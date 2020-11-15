@@ -42,6 +42,8 @@ def ParseArguments_MultiSource():
                         help="Path to receiver positions .dat file")
     parser.add_argument('--outputFile', type=str, metavar="OutputFile", default="",
                         help="Path to output .csv file")
+    parser.add_argument('--outputFolder', type=str, metavar="OutputFolder", default="Outputs",
+                        help="Path to output folder")
     parser.add_argument('--geometryFile', type=Simulator.stl_file, metavar="GeometryFile", default="Geometry.stl",
                         help="Path to geometry .stl file")
     parser.add_argument('--sourceFile', type=txt_file, metavar="SourceFile", help="Source Position (x,y,z) File",
@@ -57,22 +59,24 @@ def ParseArguments_MultiSource():
 
     receiverPositionsFile = arguments.receiverPositions
     outputFile = arguments.outputFile
+    outputFolder = arguments.outputFolder    
     geometryFile = arguments.geometryFile
     sourceFile = arguments.sourceFile
     numReflectionMax = arguments.numReflectionMax
     numDiffractionMax = arguments.numDiffractionMax
     
     if outputFile=="":
-        outputFile=f"Outputs\\r{numReflectionMax}_d{numDiffractionMax}_ReceivedPowers"
+        receiverPositionsFileName= receiverPositionsFile.split('\\')[-1][:-4]
+        outputFile=f"r{numReflectionMax}_d{numDiffractionMax}_{receiverPositionsFileName}"
 
-    return receiverPositionsFile, outputFile, geometryFile, sourceFile, numReflectionMax, numDiffractionMax
+    return receiverPositionsFile, outputFile, outputFolder, geometryFile, sourceFile, numReflectionMax, numDiffractionMax
 
 def main():
 
     print("MultipleSource.py:")
     print()
 
-    receiverPositionsFile, outputFile, geometryFile, sourceFile, numReflectionMax, numDiffractionMax = ParseArguments_MultiSource()
+    receiverPositionsFile, outputFile, outputFolder, geometryFile, sourceFile, numReflectionMax, numDiffractionMax = ParseArguments_MultiSource()
 
     #parse source position file and call Simulator.py for each source positions
     source_position_df = pd.read_csv(sourceFile, header = None)
@@ -83,7 +87,7 @@ def main():
         desiredOutputFile = outputFile + '_s('+str(row[0])+','+str(row[1])+','+str(row[2])+').csv'
 
         sys.argv = ['Simulator.py','--receiverPositions', receiverPositionsFile, '--geometryFile', geometryFile,
-        '--outputFile', desiredOutputFile, '--sourcePosition', str(sourcePosition), '--numReflectionMax', str(numReflectionMax),
+        '--outputFile', desiredOutputFile, '--outputFolder', outputFolder, '--sourcePosition', str(sourcePosition), '--numReflectionMax', str(numReflectionMax),
         '--numDiffractionMax', str(numDiffractionMax)]
 
         Simulator.main()

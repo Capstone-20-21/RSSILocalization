@@ -10,10 +10,13 @@ plottingFolder="Outputs/ToPlot/"
 files = os.listdir(plottingFolder)
 
 sources = []
+configurations = []
 for file in files:
     sourcePosition = file.split('(')[1].split(')')[0].split(',')
     sourcePosition = [float(i) for i in sourcePosition]
     sources.append(sourcePosition)
+    config = file.split('_')
+    configurations.append(f"{config[0]}_{config[1]}")
 
     
 # XYZ Information
@@ -61,7 +64,7 @@ for i, source in enumerate(sources):
     ax.set_xlabel('X[m]')
     ax.set_ylabel('Y[m]')
     ax.set_zlabel('Z[m]')
-    ax.set_title(f"Power Map - Source=({source[0]},{source[1]},{source[2]})")
+    ax.set_title(f"Power Map - Source=({source[0]},{source[1]},{source[2]}) - Config={configurations[i]}")
     plt.tight_layout()
 plt.show()
 

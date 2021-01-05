@@ -23,9 +23,9 @@ def saveRSSIMap(map, path):
     """
     # TODO: Implement
 
-def saveRSSIMap(path):
+def loadRSSIMap(path):
     """
-    Save an RSSI Map
+    load an RSSI Map
     :param path: path to load the map from
     :return: RSSIMap object (loaded map)
     """

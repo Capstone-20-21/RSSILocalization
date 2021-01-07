@@ -41,7 +41,6 @@ class RSSIMap:
           cpy = entry.copy() # work around due to pointers created through repeat
           cpy[2] = z[i]
           new_entries.append(cpy)
-          i+=1
 
       new_entries = pd.DataFrame(new_entries)
       new_entries.columns = ['X[m]', 'Y[m]', 'Z[m]', 'Power[dBm]']

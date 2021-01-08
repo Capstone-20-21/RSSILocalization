@@ -1,6 +1,7 @@
-import torch
 import numpy as np
 import pandas as pd
+import torch
+import pickle
 from itertools import repeat
 
 class RSSIMap:
@@ -8,11 +9,11 @@ class RSSIMap:
       self.source = source
       self.RSSIValues = RSSIValues
 
-    def add_noise(self, noise=1):
-      if noise == 1:
-        self.RSSIValues['Power[dBm]'] = self.RSSIValues['Power[dBm]'] + 1
-      else:
-        self.RSSIValues['Power[dBm]'] = self.RSSIValues['Power[dBm]'] - 1
+    def add_noise(self):
+      # add random float between -1 and 1 to each power
+      for i, row in self.RSSIValues.iterrows():
+        noise = np.random.uniform(-1, 1, 1)[0]
+        self.RSSIValues.at[i,'Power[dBm]'] += noise
         
     def zero_pad(self):
       x_pos = self.RSSIValues['X[m]'].to_list() # retrieve coordinates which have power values from map
@@ -79,7 +80,8 @@ def saveRSSIMap(map, path):
     :param map: The RSSI map to save
     :param path: path to save map in
     """
-    # TODO: Implement
+    with open(path, 'wb') as pickle_file:
+      pickle.dump(map, pickle_file)
 
 def loadRSSIMap(path):
     """
@@ -87,4 +89,5 @@ def loadRSSIMap(path):
     :param path: path to load the map from
     :return: RSSIMap object (loaded map)
     """
-    # TODO: Implement
+    with open(path, 'rb') as input_file:
+      loadedMap = pickle.load(input_file)

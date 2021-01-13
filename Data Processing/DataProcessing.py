@@ -65,10 +65,7 @@ def CSVToRSSIMap(pathToFile):
     RSSIValues = df[['X[m]', 'Y[m]', 'Z[m]', 'Power[dBm]']]
     RSSIValues = RSSIValues.apply(pd.to_numeric, errors='coerce') # convert data from string to float
 
-    # RSSIValues = RSSIValues.fillna(0) # SIMPLE WAY (just zero it out)
-    # better: interpolate nan values; method TBD!
-    # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.interpolate.html#pandas.DataFrame.interpolate
-    RSSIValues = RSSIValues.interpolate(method='nearest')
+    RSSIValues = RSSIValues.fillna(-300) # set nan values to -300
 
     rssi_map = RSSIMap(source_positions, RSSIValues)
 
